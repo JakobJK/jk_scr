@@ -1,10 +1,11 @@
 const { desktopCapturer, remote } = require('electron');
-const { writeFile } = require('fs');
+const { writeFile } = require('fs').promises;
 
 const { Menu } = remote;
 
 // Global state
 let mediaRecorder; // MediaRecorder instance to capture footage
+
 const recordedChunks = [];
 
 // Buttons
@@ -16,9 +17,11 @@ recordBtn.onclick = e => {
   if (mediaRecorder.state === 'inactive'){
     mediaRecorder.start();
     recordBtn.innerText = 'Recording...';
+    recordBtn.className = 'recording'
   } else {
   mediaRecorder.stop();
   recordBtn.innerText = 'Record A New Video';
+  recordBtn.className = 'ready'
   }
 };
 
@@ -73,6 +76,9 @@ async function selectSource(source) {
   mediaRecorder.onstop = handleStop;
 
   // Updates the UI
+
+  recordBtn.disabled = false;
+  recordBtn.className('ready')
 }
 
 // Captures all recorded chunks
@@ -93,7 +99,7 @@ async function handleStop(e) {
   const buffer = Buffer.from(await blob.arrayBuffer());
   const destination = path.resolve(contentFolder + `/vid-${Date.now()}.webm`);
 
-    writeFile(destination, buffer, () => console.log('video saved successfully!'));
+    await writeFile(destination, buffer, () => console.log('video saved successfully!'));
     setFiles();
   }
 

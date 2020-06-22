@@ -11,6 +11,15 @@ video {
 }
 
 body {
+  background-color: white;
   text-align: center;
   padding-top: 20px;
+}
+
+.recording {
+  background-color: red;
+}
+
+.ready {
+  background-color: green;
 }
