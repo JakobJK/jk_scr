@@ -9,21 +9,17 @@ const recordedChunks = [];
 
 // Buttons
 const videoElement = document.querySelector('video');
-const startBtn = document.getElementById('startBtn');
-const stopBtn = document.getElementById('stopBtn');
+const recordBtn = document.getElementById('recordBtn');
 const videoSelectBtn = document.getElementById('videoSelectBtn');
 
-startBtn.onclick = e => {
-  mediaRecorder.start();
-  startBtn.classList.add('is-danger');
-  startBtn.innerText = 'Recording';
-};
-
-
-stopBtn.onclick = e => {
+recordBtn.onclick = e => {
+  if (mediaRecorder.state === 'inactive'){
+    mediaRecorder.start();
+    recordBtn.innerText = 'Recording...';
+  } else {
   mediaRecorder.stop();
-  startBtn.classList.remove('is-danger');
-  startBtn.innerText = 'Start';
+  recordBtn.innerText = 'Record A New Video';
+  }
 };
 
 videoSelectBtn.onclick = getVideoSources;
@@ -34,8 +30,6 @@ async function getVideoSources() {
     types: ['screen']
   });
 
-  console.log(inputSources)
-
   const videoOptionsMenu = Menu.buildFromTemplate(
     inputSources.map(source => {
       return {
@@ -44,8 +38,6 @@ async function getVideoSources() {
       };
     })
   );
-
-
   videoOptionsMenu.popup();
 }
 
@@ -99,7 +91,7 @@ async function handleStop(e) {
   });
 
   const buffer = Buffer.from(await blob.arrayBuffer());
-  const destination = path.resolve(__dirname, '../content/') + `/vid-${Date.now()}.webm`;
+  const destination = path.resolve(contentFolder + `/vid-${Date.now()}.webm`);
 
     writeFile(destination, buffer, () => console.log('video saved successfully!'));
     setFiles();
